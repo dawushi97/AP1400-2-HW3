@@ -43,7 +43,6 @@ Implement the `<<` operator so that you would be able to use `std::cout` to prin
 	5 < node	6 <= node	2 > node	2 >= node	3 == node
 	```
 
-
 </br>
 
 # BST Class

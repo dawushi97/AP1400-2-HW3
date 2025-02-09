@@ -1,17 +1,17 @@
 #include "bst.h"
 #include <iomanip>
 
-Node::Node(int value, Node *left, Node *right):value(value),left(left),right(right) {
-}
+Node::Node(int value, Node *left, Node *right)
+    : value(value), left(left), right(right) {}
 
 Node::Node() {
-    value=0;
-    left = nullptr;
-    right = nullptr;
+  value = 0;
+  left = nullptr;
+  right = nullptr;
 }
 
-Node::Node(const Node &node):value(node.value),left(node.left),right(node.right){
-}
+Node::Node(const Node &node)
+    : value(node.value), left(node.left), right(node.right) {}
 
 std::ostream &operator<<(std::ostream &os, const Node &node) {
   os << &node << std::setw(8) << "=> value:" << node.value << std::setw(8)
@@ -19,26 +19,30 @@ std::ostream &operator<<(std::ostream &os, const Node &node) {
   return os;
 }
 
-bool operator<(int value, const Node &node) {
-    return value < node.value;
+bool operator<(int value, const Node &node) { return value < node.value; }
+
+bool operator<=(int value, const Node &node) { return value <= node.value; }
+
+bool operator>(int value, const Node &node) { return value > node.value; }
+
+bool operator>=(int value, const Node &node) { return value >= node.value; }
+
+bool operator==(int value, const Node &node) { return value == node.value; }
+
+BST::BST() {
+  root = nullptr;
 }
 
-bool operator<=(int value, const Node &node) {
-    return !(value>node.value);
-}
+BST::BST(const BST &bst) {}
 
-bool operator>(int value, const Node &node) {
-    return value>node.value;
-}
+BST::BST(BST &bst) {}
 
-bool operator>=(int value, const Node &node) {
-    return !(value < node.value);
+BST::~BST() {
+  std::vector<Node *> nodes;
+  bfs([&nodes](BST::Node *&node) { nodes.push_back(node); });
+  for (auto &node : nodes)
+    delete node;
 }
-
-bool operator==(int value, const Node &node) {
-    return value == node.value;
-}
-
 void BST::bfs(std::function<void(Node *&node)> func) {}
 
 size_t BST::length() {}

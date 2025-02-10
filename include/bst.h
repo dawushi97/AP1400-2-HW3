@@ -39,7 +39,7 @@ public:
   BST(BST &bst);
   ~BST();
 
-  Node *&get_root() { return root; };
+  Node *&get_root() { return root; }
   void bfs(std::function<void(Node *&node)> func);
   size_t length();
   bool add_node(int value);
@@ -48,12 +48,14 @@ public:
   Node **find_successor(int value);
   bool delete_node(int value);
 
-  BST& operator=(const BST& bst);  // 拷贝赋值
-  BST& operator=(BST&& bst);  // 移动赋值
-  friend std::ostream& operator<<(std::ostream& os, const BST& bst);  // 输出运算符
-  BST& operator++();  // 前缀递增
-  BST operator++(int);  // 后缀递增
+  BST &operator=(const BST &bst); // copy assignment
+  BST &operator=(BST &&bst);      // move assignment
+  friend std::ostream &operator<<(std::ostream &os,
+                                  const BST &bst); // output operator
+  BST &operator++();                               // prefix increment
+  BST operator++(int);                             // postfix increment
 
+  BST(std::initializer_list<int> init); // initializer list constructor
 private:
   Node *root;
 };

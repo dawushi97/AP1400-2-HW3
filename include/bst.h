@@ -36,9 +36,12 @@ public:
 
   BST();
   BST(const BST &bst);
-  BST(BST &bst);
+  BST &operator=(const BST &bst); // copy assignment
+  BST(BST &&bst);
+  BST &operator=(BST &&bst);      // move assignment
   ~BST();
 
+  BST(std::initializer_list<int> init); // initializer list constructor
   Node *&get_root() { return root; }
   void bfs(std::function<void(Node *&node)> func);
   size_t length();
@@ -48,14 +51,11 @@ public:
   Node **find_successor(int value);
   bool delete_node(int value);
 
-  BST &operator=(const BST &bst); // copy assignment
-  BST &operator=(BST &&bst);      // move assignment
   friend std::ostream &operator<<(std::ostream &os,
                                   const BST &bst); // output operator
   BST &operator++();                               // prefix increment
   BST operator++(int);                             // postfix increment
 
-  BST(std::initializer_list<int> init); // initializer list constructor
 private:
   Node *root;
 };

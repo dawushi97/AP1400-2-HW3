@@ -1,6 +1,6 @@
 #include "bst.h"
 #include <iomanip>
-#include <queue> // 添加在文件开头
+#include <queue>
 using Node = BST::Node;
 Node::Node(int value, Node *left, Node *right)
     : value(value), left(left), right(right) {}
@@ -30,18 +30,12 @@ bool operator>=(int value, const Node &node) { return value >= node.value; }
 
 bool operator==(int value, const Node &node) { return value == node.value; }
 
-BST::BST() { root = nullptr; }
+BST::BST() : root(nullptr) {}
 
 BST::BST(const BST &bst) {}
 
-BST::BST(BST &bst) {}
+BST::BST(BST &&bst) {}
 
-BST::~BST() {
-  std::vector<Node *> nodes;
-  bfs([&nodes](BST::Node *&node) { nodes.push_back(node); });
-  for (auto &node : nodes)
-    delete node;
-}
 void BST::bfs(std::function<void(Node *&node)> func) {
   if (root == nullptr)
     return;
@@ -68,12 +62,85 @@ size_t BST::length() {
   return count;
 }
 
-bool BST::add_node(int value) {}
+bool BST::add_node(int value) {
+  if (root ==nullptr) {
+    root = new Node(value, nullptr, nullptr);
+    return true;
+  }
+  Node *current = root;
+  while (true) {
+    if (value < current->value) {
+      if (current->left == nullptr) {
+        current->left = new Node(value, nullptr, nullptr);
+        return true;
+      }
+      current = current->left;
+    } else if (value > current->value) {
+      if (current->right == nullptr) {
+        current->right = new Node(value, nullptr, nullptr);
+        return true;
+      }
+      current = current->right;
+    } else {
+      return false;
+    }
+  }
+}
 
-Node **BST::find_node(int value) {}
+Node **BST::find_node(int value) {
+  Node **current = &root;
+  while (*current != nullptr) {
+    if (value < (*current)->value)
+      current = &(*current)->left;
+    else if (value > (*current)->value)
+      current = &(*current)->right;
+    else
+      return current;
+  }
+  return nullptr;
+}
 
 Node **BST::find_parrent(int value) {}
 
 Node **BST::find_successor(int value) {}
 
-bool BST::delete_node(int value) {}
+bool BST::delete_node(int value) {
+  Node **target = find_node(value);
+  if (target == nullptr)
+    return false;
+  else {
+    delete *target;
+    *target = nullptr;
+    return true;
+  }
+}
+
+BST & BST::operator=(const BST &bst) {
+}
+
+BST & BST::operator=(BST &&bst) {
+}
+
+std::ostream & operator<<(std::ostream &os, const BST &bst) {
+
+}
+
+BST & BST::operator++() {
+}
+
+BST BST::operator++(int) {
+}
+
+BST::BST(std::initializer_list<int> init) {
+  root=nullptr;
+  for(auto nodeValue:init){
+    add_node(nodeValue);
+  }
+}
+
+BST::~BST() {
+  std::vector<Node *> nodes;
+  bfs([&nodes](BST::Node *&node) { nodes.push_back(node); });
+  for (auto &node : nodes)
+    delete node;
+}

@@ -176,7 +176,10 @@ Node **BST::find_successor(int value) {
   if (node == nullptr)
     return nullptr;
 
-  // 如果有左子树，successor 是左子树中最大的节点
+  // In this implementation, "successor" actually refers to the "predecessor"
+  // (the largest value in the left subtree - smaller than the current node)
+
+  // 如果有左子树，"successor" 是左子树中最大的节点
   if ((*node)->left != nullptr) {
     Node **current = &(*node)->left;
     while ((*current)->right != nullptr) {
@@ -185,7 +188,7 @@ Node **BST::find_successor(int value) {
     return current;
   }
 
-  // 如果没有左子树，successor 是第一个小于该节点的祖先
+  // 如果没有左子树，"successor" 是第一个值小于该节点的祖先
   Node **current = &root;
   Node **successor = nullptr;
   while (*current != nullptr) {
@@ -225,30 +228,38 @@ bool BST::delete_node(int value) {
   }
   // Case 4: 有两个子节点
   else {
-    // 找到右子树中最小的节点（后继节点）
-    Node **successor = &(node->right);
-    while ((*successor)->left != nullptr) {
-      successor = &((*successor)->left);
+    // In BST, for a node with two children, we need to find:
+    // 1. Either the largest value in its left subtree (predecessor)
+    // 2. Or the smallest value in its right subtree (successor)
+
+    // For this implementation, we'll use the largest value in the left subtree
+    // (predecessor)
+    Node **predecessor = &(node->left);
+    while ((*predecessor)->right != nullptr) {
+      predecessor = &((*predecessor)->right);
     }
 
-    // 保存后继节点的右子树
-    Node *successorRight = (*successor)->right;
+    // 保存前驱节点和它的左子树
+    Node *predecessorNode = *predecessor;
+    Node *predecessorLeft = predecessorNode->left;
 
-    // 如果后继节点不是直接的右子节点
-    if (successor != &(node->right)) {
-      // 将后继节点的右子树连接到后继节点的父节点
-      *successor = successorRight;
+    // 如果前驱节点不是直接的左子节点
+    if (predecessor != &(node->left)) {
+      // 将前驱节点的左子树连接到前驱节点的父节点的右子树位置
+      *predecessor = predecessorLeft;
 
-      // 将原节点的右子树连接到后继节点
-      (*target)->right = node->right;
+      // 将前驱节点的左指针指向当前节点的左子树
+      predecessorNode->left = node->left;
     }
 
-    // 将原节点的左子树连接到后继节点
-    (*target)->left = node->left;
+    // 将原节点的右子树连接到前驱节点
+    predecessorNode->right = node->right;
+
+    // 更新target指向前驱节点
+    *target = predecessorNode;
 
     // 删除原节点
     delete node;
-    *target = *successor;
   }
 
   return true;

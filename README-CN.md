@@ -89,7 +89,9 @@ private:
 查找具有指定值的节点的父节点，并返回指向该父节点指针的指针。</br> **注意：** 不要使用 BFS 算法来查找节点。
 
 - **find_successor**
-查找具有指定值的节点的 successor（后继节点）。后继节点是指在中序遍历中紧跟在该节点之后的节点，通常是右子树中的最小值节点。
+查找具有指定值的节点的后继节点（successor）。
+
+> **译注：** 原文对 successor 的定义模糊。根据单元测试（TEST15: `find_successor(10)→9`，TEST29: `find_successor(5)→4`），此处实际是指该节点**左子树中的最大节点**（中序前驱/in-order predecessor），用于 `delete_node` 中替换被删除的节点。
 
 - **delete_node**
 删除具有指定值的节点。如果不存在具有该值的节点，则返回 false。
@@ -141,8 +143,6 @@ private:
 	BST bst1{5, 1, 10, 2, 8, 50, 4, 60};
     BST bst2{3, 2, 100, 20, 8, 50, 4, 60, 44, 23};
 	```
-
-这需要使用 initializer_list（初始化列表）或可变参数模板来实现。
 
 </br>
 

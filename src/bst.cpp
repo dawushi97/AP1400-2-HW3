@@ -1,5 +1,4 @@
 #include "bst.h"
-#include <compare>
 #include <cstddef>
 #include <iomanip>
 #include <queue>
@@ -153,24 +152,77 @@ Node **BST::find_parrent(int value) {
   }
   return nullptr;
 }
+// 一开始没有阅读README误解了find_successor函数的作用
 Node **BST::find_successor(int value) {
-  if (root == nullptr)
-    return nullptr;
-  Node **current = &root;
-  while (*current != nullptr) {
-    Node *left = (*current)->left;
-    Node *right = (*current)->right;
+  // if (root == nullptr)
+  //   return nullptr;
+  // Node **current = &root;
+  // while (*current != nullptr) {
+  //   Node *left = (*current)->left;
+  //   Node *right = (*current)->right;
 
-    if (**current == value) {
-      if (left != nullptr)
-        return left;
-      else if (right != nullptr)
-        return right;
-      else
-        return nullptr;
-      ;
+  //   if (**current == value) {
+  //     if (left != nullptr)
+  //       return left;
+  //     else if (right != nullptr)
+  //       return right;
+  //     else
+  //       return nullptr;
+  //     ;
+  //   }
+  // }
+  // return nullptr;
+  Node **node = find_node(value);
+  Node **successor = nullptr;
+  if (!node || !*node)
+    return nullptr;
+  if ((*node)->left) {
+    node = &((*node)->left);
+    while (*node) {
+      successor = node;
+      node = &((*node)->right);
     }
+    return successor;
   }
   return nullptr;
 }
-bool BST::delete_node(int value);
+bool BST::delete_node(int value) {
+  Node **node = find_node(value);
+  if (!node || !*node)
+    return false;
+
+  Node *target = *node;
+  // 根据 target 的子节点情况分三种 case 处理：
+  // Tip：
+  // - *node = xxx 可以直接修改父节点中指向 target 的指针
+  // - Case 3 中，把 successor 的值复制到 target，然后删除 successor
+  //   （successor 最多只有左子节点，所以删除它是更简单的 Case 1 或 2）
+  // Case 1: 叶子节点（无子节点）
+  if (target->left == nullptr && target->right == nullptr) {
+    *node = nullptr;
+    delete target;
+    return true;
+  }
+  // Case 2: 只有一个子节点（左或右）
+  if (target->left == nullptr || target->right == nullptr) {
+    if (target->left == nullptr) {
+      *node = target->right;
+      delete target;
+      return true;
+    } else {
+      *node = target->left;
+      delete (target);
+      return true;
+    }
+  }
+  // Case 3: 有两个子节点 → 用 find_successor 找到替代者
+  Node **successor = find_successor(value);
+  target->value = (*successor)->value;
+  // delete (*successor);
+  Node *succ_node = *successor;
+  *successor = succ_node->left;
+  delete succ_node;
+  return true;
+  return false;
+}
+Node **BST::find_son(int value) { return nullptr; }

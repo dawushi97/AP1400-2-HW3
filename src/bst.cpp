@@ -68,7 +68,7 @@ bool BST::add_node(int value) {
   Node *current = root;
 
   while (true) {
-    // TODO(human): 实现 BST 插入的核心逻辑
+    // 实现 BST 插入的核心逻辑
     // 根据 value 和 current->value 的比较结果：
     // - 如果相等：返回 false（不允许重复）
     if (*current == value)
@@ -148,7 +148,6 @@ Node **BST::find_parrent(int value) {
       current = &((*current)->right);
     else
       return nullptr;
-    ;
   }
   return nullptr;
 }
@@ -192,37 +191,19 @@ bool BST::delete_node(int value) {
     return false;
 
   Node *target = *node;
-  // 根据 target 的子节点情况分三种 case 处理：
-  // Tip：
-  // - *node = xxx 可以直接修改父节点中指向 target 的指针
-  // - Case 3 中，把 successor 的值复制到 target，然后删除 successor
-  //   （successor 最多只有左子节点，所以删除它是更简单的 Case 1 或 2）
-  // Case 1: 叶子节点（无子节点）
-  if (target->left == nullptr && target->right == nullptr) {
-    *node = nullptr;
-    delete target;
-    return true;
+
+  if (target->left && target->right) {
+    // 两个子节点：用 successor 的值替换，然后转为删除 successor
+    Node **successor = find_successor(value);
+    target->value = (*successor)->value;
+    target = *successor;
+    *successor = target->left;
+  } else {
+    // 零或一个子节点：直接让父指针指向存在的那个子节点（或 nullptr）
+    *node = target->left ? target->left : target->right;
   }
-  // Case 2: 只有一个子节点（左或右）
-  if (target->left == nullptr || target->right == nullptr) {
-    if (target->left == nullptr) {
-      *node = target->right;
-      delete target;
-      return true;
-    } else {
-      *node = target->left;
-      delete (target);
-      return true;
-    }
-  }
-  // Case 3: 有两个子节点 → 用 find_successor 找到替代者
-  Node **successor = find_successor(value);
-  target->value = (*successor)->value;
-  // delete (*successor);
-  Node *succ_node = *successor;
-  *successor = succ_node->left;
-  delete succ_node;
+
+  delete target;
   return true;
-  return false;
 }
 Node **BST::find_son(int value) { return nullptr; }

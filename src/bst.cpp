@@ -182,29 +182,14 @@ size_t BST::length() {
 }
 
 bool BST::add_node(int value) {
-  if (!root) {
-    root = new Node(value, nullptr, nullptr);
-    return true;
-  }
-
-  Node *current = root;
-  while (true) {
-    if (*current == value)
+  Node **current = &root;
+  while (*current) {
+    if (**current == value)
       return false;
-    else if (value < *current) {
-      if (!current->left) {
-        current->left = new Node(value, nullptr, nullptr);
-        return true;
-      }
-      current = current->left;
-    } else {
-      if (!current->right) {
-        current->right = new Node(value, nullptr, nullptr);
-        return true;
-      }
-      current = current->right;
-    }
+    current = value < **current ? &((*current))->left : &((*current)->right);
   }
+  *current = new Node(value, nullptr, nullptr);
+  return true;
 }
 
 BST::Node **BST::find_node(int value) {
@@ -212,10 +197,8 @@ BST::Node **BST::find_node(int value) {
   while (*current) {
     if (**current == value)
       return current;
-    else if (value < **current)
-      current = &((*current)->left);
     else
-      current = &((*current)->right);
+      current = value < **current ? &((*current))->left : &((*current)->right);
   }
   return nullptr;
 }
@@ -223,18 +206,13 @@ BST::Node **BST::find_node(int value) {
 BST::Node **BST::find_parrent(int value) {
   if (!root || *root == value)
     return nullptr;
+  Node **parent = nullptr;
   Node **current = &root;
   while (*current) {
-    Node *left = (*current)->left;
-    Node *right = (*current)->right;
-    if ((left && *left == value) || (right && *right == value))
-      return current;
-    if (value < **current)
-      current = &((*current)->left);
-    else if (value > **current)
-      current = &((*current)->right);
-    else
-      return nullptr;
+    if (**current == value)
+      return parent;
+    parent = current;
+    current = value < **current ? &((*current))->left : &((*current)->right);
   }
   return nullptr;
 }
